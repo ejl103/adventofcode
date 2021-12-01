@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace day_one
@@ -43,7 +42,7 @@ namespace day_one
             Console.WriteLine($"Increase values: {get_increase(as_int_array)}");
 
             var summed_list = as_int_array
-                .Where((s, i) => i + 2 < as_int_array.Length)
+                .Where((_, i) => i + 2 < as_int_array.Length)
                 .Select((s, i) =>
                 {
                     return s + as_int_array[i + 1] + as_int_array[i + 2];
