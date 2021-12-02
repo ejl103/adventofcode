@@ -10,7 +10,7 @@ namespace day_two
             string[] lines = System.IO.File.ReadAllLines(@"..\..\..\input.txt");
 
             int depth = 0, depth2 = 0;
-            int horizontal = 0, horizontal2 = 0;
+            int horizontal = 0;
             int aim = 0;
             foreach (var line in lines)
             {
@@ -22,7 +22,6 @@ namespace day_two
                     case "forward":
                         horizontal += increment;
 
-                        horizontal2 += increment;
                         depth2 += increment * aim;
                         break;
                     case "up":
@@ -43,7 +42,7 @@ namespace day_two
             var part_one_answer = depth * horizontal;
             Console.WriteLine($"Part one answer {part_one_answer}");
 
-            var part_two_answer = depth2 * horizontal2;
+            var part_two_answer = depth2 * horizontal;
             Console.WriteLine($"Part two answer {part_two_answer}");
         }
     }
