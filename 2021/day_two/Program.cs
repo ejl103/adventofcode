@@ -1,0 +1,67 @@
+﻿using System;
+using System.Linq;
+
+namespace day_two
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string[] lines = System.IO.File.ReadAllLines(@"..\..\..\input.txt");
+
+            int depth = 0;
+            int horizontal = 0;
+            foreach (var line in lines)
+            {
+                var instruction_move = line.Split(' ');
+                var increment = int.Parse(instruction_move[1]);
+
+                switch ( instruction_move[0] ) 
+                {
+                    case "forward":
+                        horizontal += increment;
+                        break;
+                    case "up":
+                        depth -= increment;
+                        break;
+                    case "down":
+                        depth += increment;
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
+
+            var part_one_answer = depth * horizontal;
+            Console.WriteLine($"Part one answer {part_one_answer}");
+
+            depth = 0;
+            horizontal = 0;
+            int aim = 0;
+            foreach (var line in lines)
+            {
+                var instruction_move = line.Split(' ');
+                var increment = int.Parse(instruction_move[1]);
+
+                switch (instruction_move[0])
+                {
+                    case "forward":
+                        horizontal += increment;
+                        depth += increment * aim;
+                        break;
+                    case "up":
+                        aim -= increment;
+                        break;
+                    case "down":
+                        aim += increment;
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
+
+            var part_two_answer = depth * horizontal;
+            Console.WriteLine($"Part two answer {part_two_answer}");
+        }
+    }
+}
