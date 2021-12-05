@@ -81,19 +81,6 @@ namespace day_four
                                         last_winning_num = num;
                                     }
                                 }
-
-                                
-                                if (card[x, y] == num)
-                                {
-                                    card[x, y] = int.MaxValue;
-
-                                    if (IsWinning(card))
-                                    {
-                                        winning_card ??= card;
-                                        cards_won.Add(card);
-                                        last_winning_num = num;
-                                    }
-                                }
                             }
 
                         }
