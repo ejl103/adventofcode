@@ -7,10 +7,8 @@ namespace day_seven
     {
         static int GetFuelUse(int moves)
         {
-            if (moves > 1)
+            if (moves > 0)
                 return moves + GetFuelUse(moves - 1);
-            else if (moves == 1)
-                return 1;
             else
                 return 0;
         }
@@ -28,6 +26,13 @@ namespace day_seven
             var fuel_results_part1 = new int[max - min];
             var fuel_results_part2 = new int[max - min];
 
+            // Recursive function is slow - limited value set so just do it once 108ms this way versus 8s
+            var fuel_lookup_part2 = new int[max - min + 1];
+            for (int i = 0; i < fuel_lookup_part2.Length; i++)
+            {
+                fuel_lookup_part2[i] = GetFuelUse(i);
+            }
+
             for (int i = min; i < max; i++)
             {
                 var result_index = i - min;
@@ -36,7 +41,7 @@ namespace day_seven
                     var moves = Math.Abs(position - i);
                     fuel_results_part1[result_index] += moves;
 
-                    fuel_results_part2[result_index] += GetFuelUse(moves);
+                    fuel_results_part2[result_index] += fuel_lookup_part2[moves];
                 }
             }
 
