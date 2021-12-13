@@ -9,10 +9,16 @@ namespace day_twelve
     {
         static Dictionary<string, List<string>> lookup = new();
         static List<List<string>> found_paths = new();
+        static bool allow_one_small_cave_twice = false;
 
-        static bool CanVisit(string cave, List<string> path)
+        static bool CanVisit(string cave, List<string> path, bool both_small_caves_used)
         {
-            return char.IsUpper(cave[0]) || !path.Contains(cave);
+            return char.IsUpper(cave[0]) || !path.Contains(cave) || (allow_one_small_cave_twice && !both_small_caves_used && IsSmallCave(cave));
+        }
+
+        static bool IsSmallCave(string cave)
+        {
+            return !IsStart(cave) && !IsEnd(cave) && char.IsLower(cave[0]);
         }
 
         static bool IsStart(string str)
@@ -25,36 +31,7 @@ namespace day_twelve
             return str == "end";
         }
 
-        struct PathComparer : IEqualityComparer<List<string>>
-        {
-            public bool Equals(List<string>? x, List<string>? y)
-            {
-                if (x == null && y == null)
-                    return true;
-
-                if (x == null || y == null)
-                    return false;
-
-                if (x.Count != y.Count)
-                    return false;
-
-                for (int i = 0; i < x.Count; i++)
-                {
-                    if (x[i] != y[i])
-                        return false;
-                }
-
-                return true;
-            }
-
-            public int GetHashCode([DisallowNull] List<string> obj)
-            {
-                throw new NotImplementedException();
-            }
-
-        }
-
-        static void PathFind(string from, List<string>? path = null, int depth = 0)
+        static void PathFind(string from, List<string>? path = null, int depth = 0, string? active_small_cave = null)
         {
             ++depth;
 
@@ -69,22 +46,42 @@ namespace day_twelve
                 else if (fork > 0)
                 {
                     path = new(path!);
+                    if (active_small_cave != null && allow_one_small_cave_twice)
+                    {
+                        // if we are removing the small cave then no longer active
+                        for (int i = depth; i < path.Count; i++)
+                        {
+                            if (path[i] == active_small_cave)
+                            {
+                                active_small_cave = null;
+                                break;
+                            }
+                        }
+                    }
+
                     path.RemoveRange(depth, path.Count - depth);
+
+                    //System.Diagnostics.Debug.Assert(active_small_cave == null ||path.Count(c => c == active_small_cave)==2);
                 }
                 System.Diagnostics.Debug.Assert(path != null);
 
-                if (CanVisit(cave, path))
+                if (CanVisit(cave, path, active_small_cave != null))
                 {
+                    if (allow_one_small_cave_twice && active_small_cave == null && IsSmallCave(cave) && path.Contains(cave))
+                    {
+                        active_small_cave = cave;
+                    }
+
                     path.Add(cave);
                     ++fork;
 
-                    if (IsEnd(cave) && !found_paths.Contains(path, new PathComparer()))
-                    {
+                    if (IsEnd(cave))
+                    {      
                         found_paths.Add(path);
                     }
                     else
                     {
-                        PathFind(cave, path, depth);
+                        PathFind(cave, path, depth, active_small_cave);
                     }
 
                 }
@@ -119,6 +116,15 @@ namespace day_twelve
             PathFind("start");
 
             Console.WriteLine($"Part one answer: {found_paths.Count}");
+
+            // Reset for run two (dirty hack!)
+            found_paths.Clear();
+            allow_one_small_cave_twice = true;
+
+            PathFind("start");
+
+            Console.WriteLine($"Part two answer: {found_paths.Count}");
+
         }
     }
 }
